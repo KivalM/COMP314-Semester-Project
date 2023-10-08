@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>BrainF*ck Compiler</title>
+</head>
+
+<body>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* dark style  */
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .section {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        #intro {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+        }
+
+        #lexer {
+            /* display: none; */
+        }
+
+        #parser {
+            /* display: none; */
+        }
+
+        #parser-split {
+            /* l/r */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+        }
+
+        #parser-intro {
+            /* l */
+            grid-column: 1;
+        }
+
+        .cfg {
+            /* r */
+            grid-column: 2;
+        }
+
+
+
+        #semantic {
+            /* display: none; */
+        }
+
+        #generator {
+            /* display: none; */
+        }
+
+        #output {
+            /* display: none; */
+        }
+
+        .button {
+            display: block;
+            margin: auto;
+            padding: 10px;
+            background-color: #1e1e1e;
+            color: #fff;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100px;
+
+        }
+
+        .button:hover {
+            background-color: #fff;
+            color: #1e1e1e;
+            cursor: pointer;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #lexer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+        }
+
+        #lexer-code {
+            grid-column: 1;
+        }
+
+        #lexer-output {
+            grid-column: 2;
+        }
+
+        textarea {
+            width: 90%;
+            height: 90%;
+            resize: none;
+            background-color: #1e1e1e;
+            color: #fff;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            padding: 10px;
+            /* disable spell check */
+            -webkit-user-modify: read-write-plaintext-only;
+        }
+    </style>
+
+
+    <h1>BrainF*ck Compiler</h1>
+
+    <div id="intro" class="section">
+
+        <div>
+            <h2>About</h2>
+            <p>
+                BrainF*ck is a programming language created in 1993 by Urban Müller, and is notable for its extreme
+                minimalism. It is a Turing tarpit, designed to challenge and amuse programmers, and was not made to be
+                suitable for practical use. It was inspired by the programming language FALSE.
+            </p>
+
+            <p>
+                There are 8 commands in BrainF*ck:
+            <ul>
+                <li> > - increment the data pointer (to point to the next cell to the right).</li>
+                <li>
+                    < - decrement the data pointer (to point to the next cell to the left).</li>
+                <li> + - increment (increase by one) the byte at the data pointer.</li>
+                <li> - - decrement (decrease by one) the byte at the data pointer.</li>
+                <li> . - output the byte at the data pointer.</li>
+                <li> , - accept one byte of input, storing its value in the byte at the data pointer.</li>
+                <li> [ - if the byte at the data pointer is zero, then instead of moving the instruction pointer
+                    forward to the next command, jump it forward to the command after the matching ] command.</li>
+                <li> ] - if the byte at the data pointer is nonzero, then instead of moving the instruction pointer
+                    forward to the next command, jump it back to the command after the matching [ command.</li>
+            </ul>
+            </p>
+        </div>
+
+        <div>
+            <h2>Project</h2>
+            <p>
+                For our project, we will be creating a compiler for the BrainF*ck language. The compiler is written in
+                Python, and will be able to compile BrainF*ck code into LLVM IR, which can then be compiled into machine
+                code.
+
+                There are 4 main parts to the compiler:
+            <ul>
+                <li>Lexer - converts the source code into tokens</li>
+                <li>Parser - converts the tokens into an abstract syntax tree</li>
+                <li>Semantic Analyzer - checks the syntax tree for errors</li>
+                <li>Code Generator - converts the syntax tree into LLVM IR code</li>
+
+            </ul>
+            </p>
+
+            <p>
+            <h4>Members</h4>
+            <ul>
+                <li>Joshua Bautista</li>
+                <li>John Paul Capili</li>
+                <li>John Paul Dela Cruz</li>
+                <li>John Paul Dela Cruz</li>
+                <li>John Paul Dela Cruz</li>
+                <li>John Paul Dela Cruz</li>
+                <li>John Paul Dela Cruz</li>
+                <li>John Paul Dela Cruz</li>
+            </ul>
+            </p>
+        </div>
+    </div>
+
+    <div id="lexer" class="section">
+        <h2>Lexer</h2>
+        <p>
+            The lexer is the first part of the compiler. It converts the source code into tokens. Tokens are the
+            smallest unit of a programming language. For example, in the statement "int x = 5;", the tokens are
+            "int", "x", "=", and "5". The lexer will also remove comments from the source code.
+        </p>
+        <div id="lexer-section">
+            <!-- code bloc -->
+            <div id="lexer-code">
+                <h4>Code</h4>
+                <textarea id="lexer-code-input" cols="30" rows="10" placeholder="Enter BrainF*ck code here...">
+                </textarea>
+            </div>
+
+            <!-- output -->
+            <div>
+                <h4>Output</h4>
+                <div id="lexer-output">
+                    [ ">", "+", "<", "-" , "." , "," , "[" , "]" ] </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="parser" class="section">
+        <h2>Parser</h2>
+        <div id="parser-split">
+            <div id="parser-intro">
+                <p>
+                    Since BF is a regular language, we can define a set of CFG rules to parse the tokens into an
+                    abstract
+                    syntax
+                    tree.
+
+                    The following is the CFG for BF:
+                <ul>
+                    <li>program -> statement program</li>
+                    <li>program -> statement</li>
+                    <li>statement -> +</li>
+                    <li>statement -> -</li>
+                    <li>statement -> ></li>
+                    <li>statement -> &lt;</li>
+                    <li>statement -> .</li>
+                    <li>statement -> ,</li>
+                    <li>statement -> [ program ]</li>
+                </ul>
+
+                <p>
+                    We used a recursive descent parser to parse the tokens into an abstract syntax tree.
+                    <a href="https://en.wikipedia.org/wiki/Recursive_descent_parser">Read more about recursive descent
+                        parsers
+                        here.</a>
+
+                <p>
+            </div>
+
+            <!-- canvas to draw cfg -->
+            <div class="cfg">
+                <canvas id="cfg-canvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="semantic" class="section">
+        <h2>Semantic Analysis</h2>
+        <div id="parser-split">
+            <div id="parser-intro">
+                <p>
+                    Semantic analysis is the process of checking the syntax tree for errors. For example, in the
+                    statement
+                    "int x = 5;", the semantic analyzer will check if the variable "x" has been declared before it is
+                    used.
+
+                    In our language we check the CFG for the following errors:
+                <ul>
+                    <li>Unmatched loop</li>
+                    <li>Unmatched bracket</li>
+                    <li>Invalid token</li>
+                </ul>
+            </div>
+
+            <!-- canvas to draw cfg -->
+            <div>
+                <h4>Errors</h4>
+                <div id="semantic-output">
+                    [Error] Unmatched loop at character 5
+                    [Error] Unmatched bracket at character 10
+                    [Error] Invalid token at character 15
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="generator" class="section">
+        <h2>Code Generator</h2>
+        <div id="parser-split">
+            <div id="parser-intro">
+                Here we convert the syntax tree into LLVM IR code.
+                This is the final step of the compiler. We have roughly based this code generator on the
+                https://github.com/itchyny/llvm-brainfuck project
+
+            </div>
+
+            <!-- canvas to draw cfg -->
+            <div>
+                <h4>LLVM IR Output</h4>
+                <div id="semantic-output">
+                    [Error] Unmatched loop at character 5
+                    [Error] Unmatched bracket at character 10
+                    [Error] Invalid token at character 15
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="output" class="section">
+        <h2>Run the Program</h2>
+        <div id="parser-split">
+            <div id="parser-intro">
+                The program has now been converted to LLVM IR, and then to machine code. We can now execute this program
+                and view its output.
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        // on lexer input change
+        document.getElementById("lexer-code-input").addEventListener("input", function () {
+            // get lexer input
+            var lexerInput = document.getElementById("lexer-code-input").value;
+
+            // split lexer input into tokens
+            var lexerOutput = lexerInput.split("");
+
+            // display lexer output
+            document.getElementById("lexer-output").innerHTML = lexerOutput;
+        });
+
+    </script>
+
+    <button id="run" class="button">Next</button>
+</body>
+
+</html>
