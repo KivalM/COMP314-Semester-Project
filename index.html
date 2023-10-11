@@ -247,15 +247,18 @@
 
                     The following is the CFG for BF:
                 <ul>
-                    <li>program -> statement program</li>
-                    <li>program -> statement</li>
-                    <li>statement -> +</li>
-                    <li>statement -> -</li>
-                    <li>statement -> ></li>
-                    <li>statement -> &lt;</li>
-                    <li>statement -> .</li>
-                    <li>statement -> ,</li>
-                    <li>statement -> [ program ]</li>
+                    <li>program -> (loop | operation)* </li>
+                    <li>loop -> loop_start program loop_end </li>
+                    <li>operation -> (increment | decrement | move_right | move_left | input | output) </li>
+                    <li>loop_start -> [ </li>
+                    <li>loop_end -> ] </li>
+                    <li>increment -> + </li>
+                    <li>decrement -> - </li>
+                    <li>move_right -> > </li>
+                    <li>move_left -> < </li>
+                    <li>input -> , </li>
+                    <li>output -> . </li>
+                    <li>comment -> # </li>
                 </ul>
 
                 <p>
