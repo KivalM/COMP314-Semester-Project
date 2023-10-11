@@ -47,15 +47,25 @@
 
         #intro {}
 
-        #lexer {}
+        #lexer {
+            display: none;
+        }
 
-        #parser {}
+        #parser {
+            display: none;
+        }
 
-        #semantic {}
+        #semantic {
+            display: none;
+        }
 
-        #generator {}
+        #ir {
+            display: none;
+        }
 
-        #output {}
+        #output {
+            display: none;
+        }
 
 
         #lexer-section {
@@ -228,8 +238,9 @@
                 </div>
             </div>
         </div>
+        <button id="run" class="button" onclick="pywebview.api.to_parser()">Next</button>
+
     </div>
-    <button id="run" class="button" onclick="pywebview.api.to_parser()">Next</button>
 
     </div>
 
@@ -278,6 +289,9 @@
                 <canvas id="cfg-canvas" width="500" height="500"></canvas>
             </div>
         </div>
+
+        <button id="run" class="button" onclick="pywebview.api.to_semantic()">Next</button>
+
     </div>
 
     <div id="semantic" class="section">
@@ -311,9 +325,12 @@
                 </div>
             </div>
         </div>
+
+        <button id="run" class="button" onclick="pywebview.api.to_ir()">Next</button>
+
     </div>
 
-    <div id="generator" class="section">
+    <div id="ir" class="section">
         <h2>Code Generator</h2>
         <div id="parser-split">
             <div id="parser-intro">
@@ -333,6 +350,9 @@
                 </div>
             </div>
         </div>
+
+        <button id="run" class="button" onclick="pywebview.api.to_compiler()">Next</button>
+
     </div>
 
     <div id="output" class="section">
@@ -351,12 +371,7 @@
 
     <script>
 
-        // pywebview callbacks
 
-        function intro() {
-            // get value of code editor
-
-        }
 
         // on lexer input change
         function lexer() {

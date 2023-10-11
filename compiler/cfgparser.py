@@ -3,8 +3,21 @@
 # https://www.geeksforgeeks.org/recursive-descent-parser/
 # https://tuckyou.in/2016/05/27/brainfuq-a-brainfuck-interpreter/
 from typing import Literal
-from lexer import BFLexer
+from .lexer import BFLexer
 from graphviz import Digraph
+
+# program -> (loop | operation)*
+# loop -> loop_start program loop_end
+# operation -> (increment | decrement | move_right | move_left | input | output)
+# loop_start -> [
+# loop_end -> ]
+# increment -> +
+# decrement -> -
+# move_right -> >
+# move_left -> <
+# input -> ,
+# output -> .
+# comment -> #
 
 
 class BrainFuckNode:

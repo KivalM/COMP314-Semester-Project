@@ -40,11 +40,23 @@ class api:
 
         # open CFG.png and load it into the webview
 
-    def to_compiler(self):
+    def to_semantic(self):
         window.evaluate_js(
             "document.getElementById('parser').style.display = 'none';")
         window.evaluate_js(
-            "document.getElementById('compiler').style.display = 'flex';")
+            "document.getElementById('semantic').style.display = 'flex';")
+
+    def to_ir(self):
+        window.evaluate_js(
+            "document.getElementById('semantic').style.display = 'none';")
+        window.evaluate_js(
+            "document.getElementById('ir').style.display = 'flex';")
+
+    def to_compiler(self):
+        window.evaluate_js(
+            "document.getElementById('ir').style.display = 'none';")
+        window.evaluate_js(
+            "document.getElementById('output').style.display = 'flex';")
 
 
 if __name__ == '__main__':
