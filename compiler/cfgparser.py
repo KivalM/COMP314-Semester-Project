@@ -1,6 +1,7 @@
 # an implementation of a recursive desscent parser for brainfuck
 # https://en.wikipedia.org/wiki/Recursive_descent_parser
 # https://www.geeksforgeeks.org/recursive-descent-parser/
+# https://tuckyou.in/2016/05/27/brainfuq-a-brainfuck-interpreter/
 from typing import Literal
 from lexer import BFLexer
 from graphviz import Digraph
