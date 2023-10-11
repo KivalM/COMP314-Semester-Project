@@ -1,105 +1,56 @@
 import webview
 import compiler.lexer as lexer
+import compiler.cfgparser as cfgparser
 
-html = """<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Start page</title>
-</head>
+html = ""
 
-<body>
-    <h1>BrainF**k Compiler</h1>
-    <div>
-        <p>BrainF**k is an esoteric programming language created in 1993 by Urban Müller, and notable for its extreme
-            minimalism.</p>
-        <p>It consists of only eight simple commands and an instruction pointer. While it is fully Turing-complete, it
-            is not intended for practical use, but to challenge and amuse programmers.</p>
-    </div>
 
-    <div id="editor">
-        <textarea id="code" rows="10" cols="50">++</textarea>
-        <div id="output"></div>
-
-    </div>
-    <button id="compile" onclick="lex()">
-        Next
-    </button>
-
-    <div>
-
-        <script>
-            function lex() {
-                var source = document.getElementById('code').value;
-                pywebview.api.compile(source).then(function(tokens) {
-                    document.getElementById('output').innerHTML = tokens;
-                });
-            }
-        </script>
-
-        <style>
-            body {
-                font-family: sans-serif;
-            }
-
-            h1 {
-                text-align: center;
-            }
-
-            div {
-                margin: 20px;
-            }
-
-            textarea {
-                width: 50%;
-            }
-
-            #editor {
-                display: flex;
-            }
-
-            #code {
-                width: 50%;
-                border: 1px solid #ccc;
-                padding: 10px;
-            }
-
-            #output {
-                width: 50%;
-                border: 1px solid #ccc;
-                padding: 10px;
-            }
-
-            button {
-                font-size: 1.2em;
-                padding: 10px;
-                margin: 10px;
-            }
-        </style>
-
-</body>
-
-</html>
-"""
+# read from index.html
+with open("index.html", "r+") as f:
+    html = f.read()
 
 
 class api:
+
     def __init__(self):
+        self.tokens = []
         pass
 
-    def compile(self, source):
+    def intro(self):
+        # get the intro id and hide it
+        window.evaluate_js(
+            "document.getElementById('intro').style.display = 'none';")
+        window.evaluate_js(
+            "document.getElementById('lexer').style.display = 'flex';")
+
+    def lexer(self, source):
         lex = lexer.BFLexer()
-        tokens = lex.lex(source)
-        print(tokens)
-        return tokens
+        self.tokens = lex.lex(source)
+        return self.tokens
 
+    def to_parser(self):
+        window.evaluate_js(
+            "document.getElementById('lexer').style.display = 'none';")
+        window.evaluate_js(
+            "document.getElementById('parser').style.display = 'flex';")
 
-def startpage():
-    webview.create_window('BrainF**k Compiler',
-                          html=html, width=800, height=600, js_api=api())
+        parser = cfgparser.BrainfuckParser(self.tokens).parse_program()
+        cfgparser.visualize(parser)
+
+        # open CFG.png and load it into the webview
+
+    def to_compiler(self):
+        window.evaluate_js(
+            "document.getElementById('parser').style.display = 'none';")
+        window.evaluate_js(
+            "document.getElementById('compiler').style.display = 'flex';")
 
 
 if __name__ == '__main__':
-    startpage()
+    w = webview.create_window(
+        'BrainF**k Compiler', html=html, width=1920, height=1080, js_api=api())
+
+    global window
+    window = w
     webview.start()

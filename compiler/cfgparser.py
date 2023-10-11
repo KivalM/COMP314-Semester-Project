@@ -3,6 +3,7 @@
 # https://www.geeksforgeeks.org/recursive-descent-parser/
 from typing import Literal
 from lexer import BFLexer
+from graphviz import Digraph
 
 
 class BrainFuckNode:
@@ -61,6 +62,22 @@ class BrainfuckParser:
         return BrainFuckNode("Loop", self.ptr, loop_nodes.children)
 
 
+def visualize_tree(node: BrainFuckNode, dot=None):
+    if dot is None:
+        dot = Digraph(format="png")
+    dot.node(str(id(node)), label=node.value)
+
+    for child in node.children:
+        dot.edge(str(id(node)), str(id(child)))
+        visualize_tree(child, dot)
+    return dot
+
+
+def visualize(tree):
+    dot = visualize_tree(tree)
+    dot.render('CFG', view=True)
+
+
 def test():
     # Example usage:
     code = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>."
@@ -69,6 +86,8 @@ def test():
 
     parser = BrainfuckParser(code)
     ast = parser.parse_program()
+
+    visualize(ast)
 
     # Function to print the AST
 
