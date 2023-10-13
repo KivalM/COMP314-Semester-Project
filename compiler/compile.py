@@ -2,9 +2,8 @@ from llvmlite import ir, binding as llvm
 import ctypes
 import sys
 
-# courtesy of the llvmlite docs
 
-
+# verbatim from llvmlite docs
 class JITCompiler:
     def __init__(self) -> None:
         llvm.initialize()

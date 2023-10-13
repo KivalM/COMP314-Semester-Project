@@ -2,6 +2,7 @@
 # https://en.wikipedia.org/wiki/Recursive_descent_parser
 # https://www.geeksforgeeks.org/recursive-descent-parser/
 # https://tuckyou.in/2016/05/27/brainfuq-a-brainfuck-interpreter/
+
 from typing import Literal
 from graphviz import Digraph
 from .lexer import BFLexer
@@ -20,6 +21,7 @@ from .lexer import BFLexer
 # comment -> #
 
 
+# a node in our AST
 class BrainFuckNode:
     def __init__(self, value, char_index, children=None, ):
         self.value: Literal["Loop", "Program", "LoopEnd",
@@ -51,7 +53,7 @@ class BrainfuckParser:
         nodes = []
         while self.ptr < len(self.code):
             char = self.code[self.ptr]
-
+            # perform recursive parsing depending on the type of instruction
             if char in (">", "<", "+", "-", ".", ","):
                 nodes.append(self.parse_command())
             elif char == "[":
@@ -76,6 +78,7 @@ class BrainfuckParser:
         return BrainFuckNode("Loop", self.ptr, loop_nodes.children)
 
 
+# function to draw the ast as a digraph to a png using graphviz
 def visualize_tree(node: BrainFuckNode, dot=None):
     if dot is None:
         dot = Digraph(format="png")

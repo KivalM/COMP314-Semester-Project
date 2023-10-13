@@ -1,6 +1,12 @@
+# referenced https://github.com/PurpleMyst/bf_compiler
+# but changed to support our ast structure
+
+
 from llvmlite import ir, binding as llvm
 from .cfgparser import BrainfuckParser, BrainFuckNode
 from .lexer import BFLexer
+
+
 INDEX_BIT_SIZE = 16
 
 
@@ -55,26 +61,29 @@ class IRManager:
 
         def compile_instruction(instruction: BrainFuckNode):
             if instruction.value == "Loop":
-
+                # append a llvm loop block
                 preloop = builder.append_basic_block(name="preloop")
-
+                # branch into the block
                 builder.branch(preloop)
-
+                # go to the start position of the loop
                 builder.position_at_start(preloop)
 
                 location = get_tape_location()
                 tape_value = builder.load(location)
 
                 is_zero = builder.icmp_unsigned("==", tape_value, zero8)
-
+                # add a body block so we can dump the looop contents and recurse
                 body = builder.append_basic_block(name="body")
                 builder.position_at_start(body)
                 for child in instruction.children:
                     if child.value != "LoopEnd":
+                        # compile any valid nodes
                         compile_instruction(child)
 
+                # branch back out, to the upper level after processing child nodes
                 builder.branch(preloop)
 
+                # go out of the loop
                 postloop = builder.append_basic_block(name="postloop")
 
                 builder.position_at_end(preloop)
@@ -84,7 +93,7 @@ class IRManager:
             elif instruction.value == "+" or instruction.value == "-":
                 location = get_tape_location()
                 value = builder.load(location)
-
+                # add or subtract 1 from the value
                 if instruction.value == "+":
                     new_value = builder.add(value, one8)
                 else:
@@ -93,7 +102,7 @@ class IRManager:
                 builder.store(new_value, location)
             elif instruction.value == ">" or instruction.value == "<":
                 index_value = builder.load(index)
-
+                # add or subtract 1 from the index i.e move pointer left or right
                 if instruction.value == ">":
                     index_value = builder.add(index_value, index_type(1))
                 else:
@@ -102,12 +111,14 @@ class IRManager:
                 builder.store(index_value, index)
 
             elif instruction.value == ".":
+                # print the value at the current tape location
                 location = get_tape_location()
                 tape_value = builder.load(location)
                 tape_value = builder.zext(tape_value, int32)
 
                 builder.call(putchar, (tape_value,))
             elif instruction.value == ",":
+                #  read a character from stdin and store it at the current tape location
                 location = get_tape_location()
 
                 char = builder.call(getchar, ())
@@ -121,11 +132,14 @@ class IRManager:
                         char = builder.trunc(char, tape_type)
                         builder.store(char, location)
 
+        # compile the ast recursively
         for instruction in ast.children:
             compile_instruction(instruction)
 
+        # add a return statement
         builder.ret(int32(0))
 
+        # print the llvm ir
         return module
 
 
