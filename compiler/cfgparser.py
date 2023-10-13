@@ -3,8 +3,8 @@
 # https://www.geeksforgeeks.org/recursive-descent-parser/
 # https://tuckyou.in/2016/05/27/brainfuq-a-brainfuck-interpreter/
 from typing import Literal
-from .lexer import BFLexer
 from graphviz import Digraph
+from .lexer import BFLexer
 
 # program -> (loop | operation)*
 # loop -> loop_start program loop_end
@@ -60,7 +60,7 @@ class BrainfuckParser:
                 nodes.append(BrainFuckNode("LoopEnd", self.ptr))
                 return BrainFuckNode("Program", self.ptr, nodes)
             else:
-                AssertionError
+                assert AssertionError
 
         return BrainFuckNode("Program", self.ptr, nodes)
 
@@ -89,7 +89,7 @@ def visualize_tree(node: BrainFuckNode, dot=None):
 
 def visualize(tree):
     dot = visualize_tree(tree)
-    dot.render('CFG', view=True)
+    dot.render('CFG', view=False)
 
 
 def test():

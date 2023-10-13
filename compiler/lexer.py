@@ -4,10 +4,10 @@ class BFLexDFA:
         self.accept_states = [1]
 
         self.alphabet = [">", "<", "+", "-", ".", ",", "[", "]", "#"]
-        
+
         # transitions to only recognize single tokens
         self.transitions = {
-            # initial state, 
+            # initial state,
             0: {
                 ">": 1,
                 "<": 1,
@@ -31,7 +31,7 @@ class BFLexDFA:
                 "#": 0
             },
             # error state
-            2:{
+            2: {
                 ">": 2,
                 "<": 2,
                 "+": 2,
@@ -43,7 +43,7 @@ class BFLexDFA:
                 "#": 2
             }
         }
-    
+
     def step(self, token):
         if token not in self.alphabet:
             token = "#"
@@ -58,7 +58,7 @@ class BFLexDFA:
 class BFLexer:
     def __init__(self):
         self.dfa = BFLexDFA()
-    
+
     def lex(self, program):
         # is a bit convoluted and unnecessary, but it properly demonstrates the DFA
         tokens = []
@@ -72,18 +72,19 @@ class BFLexer:
             token_buffer = ""
             pointer2 = pointer1
 
+            # While the current token is in the string, and the DFA accepts the current token
             while pointer2 < len(program) and self.dfa.step(program[pointer2]):
-                
+                # add the string to the token buffer
                 token_buffer += program[pointer2]
                 pointer2 += 1
-            
+
+            # if the token buffer is not empty, add it to the tokens list
             if token_buffer != "":
                 tokens.append(token_buffer)
                 pointer1 = pointer2
                 self.dfa.reset()
             else:
                 pointer1 += 1
-            
 
         return tokens
 
@@ -102,6 +103,7 @@ def test_lexer():
 
     tokens = lexer.lex(">>+<A[]")
     assert tokens == [">", ">", "+", "<", "[", "]"]
+
 
 if __name__ == "__main__":
     test_lexer()

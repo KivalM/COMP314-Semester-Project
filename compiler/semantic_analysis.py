@@ -1,5 +1,5 @@
-from cfgparser import BrainFuckNode, BrainfuckParser
-from lexer import BFLexer
+from .cfgparser import BrainFuckNode, BrainfuckParser
+from .lexer import BFLexer
 from typing import List, Literal
 
 
@@ -20,64 +20,41 @@ class SemanticAnalysis:
         self.issues: List[SemanticIssue] = []
 
     def analyze(self):
-        return self.check_missing_brackets() and self.check_ptr_decrements_at_start() and self.check_empty_loops()
-
-    def check_missing_brackets(self) -> bool:
         ast: BrainFuckNode = self.ast
+        self.found_char_other_than_dec = False
 
-        def check_if_has_loop_end(ast: BrainFuckNode) -> bool:
-            children: List[BrainFuckNode] = ast.getChildren()
-            missing_brace = False
-            for node in children:
+        def traverse(node: BrainFuckNode):
+            if node.value == "Loop":
+                # check that loop is not empty
+                found_close = False
+                for child in node.children:
+                    if child.value == "LoopEnd":
+                        found_close = True
 
-                if node.getValue() == "Loop":
-                    if not check_if_has_loop_end(node):
-                        self.issues.append(
-                            SemanticIssue("error", "Missing loop close", node)
-                        )
-                        missing_brace = True
+                if not found_close:
+                    self.issues.append(
+                        SemanticIssue("error", "Missing loop close", node)
+                    )
 
-            return not missing_brace
+                if len(node.children) == 1:
+                    self.issues.append(
+                        SemanticIssue(
+                            "warning", "[] either do nothing or run forever", node)
+                    )
 
-        return check_if_has_loop_end(ast)
+            elif node.value == "<":
+                if not self.found_char_other_than_dec:
+                    self.issues.append(
+                        SemanticIssue(
+                            "error", "Ptr decrement in the beginning of the program", node)
+                    )
+            elif node.value != "Program":
+                self.found_char_other_than_dec = True
 
-    def check_ptr_decrements_at_start(self) -> bool:
-        def check_if_dec_at_start(node: BrainFuckNode) -> bool:
-            child: BrainFuckNode = node.children[0]
-            if child.value == "Loop":
-                return check_if_dec_at_start(child)
-            elif child.value == "<":
-                self.issues.append(
-                    SemanticIssue(
-                        "error", "Ptr decrement in the beginning of the program", node)
-                )
-                return True
-            else:
-                return False
+            for child in node.children:
+                traverse(child)
 
-        return not check_if_dec_at_start(self.ast)
-
-    def check_empty_loops(self):
-
-        def find_empty_loops(ast: BrainFuckNode) -> bool:
-            children: List[BrainFuckNode] = ast.getChildren()
-            empty_loops = False
-            for node in children:
-                if node.getValue() == "Loop":
-                    node_children: List[BrainFuckNode] = ast.getChildren()
-                    if len(node_children) > 0 and node_children[0].value == "LoopEnd":
-                        empty_loops = True
-                        self.issues.append(
-                            SemanticIssue(
-                                "error", "[] either do nothing or run forever", node)
-                        )
-                    else:
-                        if find_empty_loops(node):
-                            empty_loops = True
-
-            return empty_loops
-
-        return not find_empty_loops(self.ast)
+        traverse(ast)
 
 
 def test():

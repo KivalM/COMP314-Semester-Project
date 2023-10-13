@@ -83,12 +83,16 @@
             grid-column: 2;
         }
 
-
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+        }
 
         #parser-split {
             /* l/r */
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
             grid-gap: 10px;
         }
 
@@ -100,6 +104,14 @@
         .cfg {
             /* r */
             grid-column: 2;
+        }
+
+        #cfgimg {
+            background-image: url("https://i.imgur.com/5XZQ1YH.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100%;
         }
 
         .button {
@@ -197,14 +209,14 @@
                     <p>
                     <h4>Members</h4>
                     <ul>
-                        <li>Joshua Bautista</li>
-                        <li>John Paul Capili</li>
-                        <li>John Paul Dela Cruz</li>
-                        <li>John Paul Dela Cruz</li>
-                        <li>John Paul Dela Cruz</li>
-                        <li>John Paul Dela Cruz</li>
-                        <li>John Paul Dela Cruz</li>
-                        <li>John Paul Dela Cruz</li>
+                        <li>Kival Mahadew - 221001688</li>
+                        <li>Anele Skhosana- 220049255</li>
+                        <li>Sphephelo Jali - 220055031</li>
+                        <li>Shaileshin Manickum - 221024591</li>
+                        <li>Sizwe Ngema- 218010150 </li>
+                        <li>Luqmaan Essay - 220025354</li>
+                        <li>Phakamani Mchunu - 219061179</li>
+                        <li>Simphiwe Mdokha - 219001646</li>
                     </ul>
                     </p>
                 </div>
@@ -220,7 +232,8 @@
             <p>
                 The lexer is the first part of the compiler. It converts the source code into tokens. Tokens are the
                 smallest unit of a programming language. For example, in the statement "int x = 5;", the tokens are
-                "int", "x", "=", and "5". The lexer will also remove comments from the source code.
+                "int", "x", "=", and "5". The lexer will also remove comments from the source code. In our language, we
+                only have 8 types of tokens, each consisting of a single character.
             </p>
         </div>
         <div id="lexer-section">
@@ -263,30 +276,20 @@
                     <li>operation -> (increment | decrement | move_right | move_left | input | output) </li>
                     <li>loop_start -> [ </li>
                     <li>loop_end -> ] </li>
-                    <li>increment -> + </li>
-                    <li>decrement -> - </li>
-                    <li>move_right -> > </li>
-                    <li>move_left -> < </li>
-                    <li>input -> , </li>
-                    <li>output -> . </li>
-                    <li>comment -> # </li>
                 </ul>
 
                 <p>
                     We used a recursive descent parser to parse the tokens into an abstract
                     syntax tree.
                     <a href="https://en.wikipedia.org/wiki/Recursive_descent_parser">Read more
-                        about recursive
-                        descent
-                        parsers
-                        here.</a>
+                        about recursive descent parsers here.</a>
 
                 <p>
             </div>
 
             <!-- canvas to draw cfg -->
-            <div class="cfg">
-                <canvas id="cfg-canvas" width="500" height="500"></canvas>
+            <div id="cfgimg">
+
             </div>
         </div>
 
@@ -296,16 +299,14 @@
 
     <div id="semantic" class="section">
         <h2>Semantic Analysis</h2>
-        <div id="parser-split">
-            <div id="parser-intro">
+        <div id="" class="grid-2">
+            <div id="">
                 <p>
                     Semantic analysis is the process of checking the syntax tree for errors. For
                     example, in the
                     statement
                     "int x = 5;", the semantic analyzer will check if the variable "x" has been declared
-                    before it
-                    is
-                    used.
+                    before it is used.
 
                     In our language we check the CFG for the following errors:
                 <ul>
@@ -318,11 +319,11 @@
             <!-- canvas to draw cfg -->
             <div>
                 <h4>Errors</h4>
-                <div id="semantic-output">
+                <pre id="semantic-output">
                     [Error] Unmatched loop at character 5 <br>
                     [Error] Unmatched bracket at character 10 <br>
                     [Error] Invalid token at character 15 <br>
-                </div>
+                </pre>
             </div>
         </div>
 
@@ -332,7 +333,7 @@
 
     <div id="ir" class="section">
         <h2>Code Generator</h2>
-        <div id="parser-split">
+        <div id="">
             <div id="parser-intro">
                 Here we convert the syntax tree into LLVM IR code.
                 This is the final step of the compiler. We have roughly based this code generator on the
@@ -343,16 +344,14 @@
             <!-- canvas to draw cfg -->
             <div>
                 <h4>LLVM IR Output</h4>
-                <div id="semantic-output">
+                <pre id="ir-output">
                     [Error] Unmatched loop at character 5
                     [Error] Unmatched bracket at character 10
                     [Error] Invalid token at character 15
-                </div>
+                </pre>
             </div>
         </div>
-
         <button id="run" class="button" onclick="pywebview.api.to_compiler()">Next</button>
-
     </div>
 
     <div id="output" class="section">
@@ -360,13 +359,11 @@
         <div id="parser-split">
             <div id="parser-intro">
                 The program has now been converted to LLVM IR, and then to machine code. We can now
-                execute this
-                program
-                and view its output.
-
+                execute this program and view its output. The output could not be piped to the GUI and will be displayed
+                in the console.
             </div>
         </div>
-
+        <button id="run" class="button" onclick="pywebview.api.finish()">Next</button>
     </div>
 
     <script>
