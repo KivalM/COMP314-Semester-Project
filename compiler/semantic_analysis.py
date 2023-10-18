@@ -13,8 +13,6 @@ class SemanticIssue:
         self.value = value
         self.type = type
 
-# dfa to
-
 
 class DecrementPointerIssueDFA:
     def __init__(self):
@@ -136,7 +134,7 @@ class EmptyLoopIssueDFA:
 class MissingBracketDFA:
     def __init__(self):
         self.state = 0
-        self.accept_states = [0]
+        self.accept_states = [0, 8]
 
         self.alphabet = [">", "<", "+", "-", ".", ",", "[", "]", "#"]
 
@@ -263,6 +261,9 @@ class SemanticAnalysis:
     def __init__(self, ast):
         self.ast: BrainFuckNode = ast
         self.issues: List[SemanticIssue] = []
+        self.dec_dfa = DecrementPointerIssueDFA()
+        self.empty_dfa = EmptyLoopIssueDFA()
+        self.bracket_dfa = MissingBracketDFA()
 
     def analyze(self):
         ast: BrainFuckNode = self.ast
@@ -270,40 +271,36 @@ class SemanticAnalysis:
 
         def traverse(node: BrainFuckNode):
             if node.value == "Loop":
-                # check that loop is not empty
-                found_close = False
-                for child in node.children:
-                    if child.value == "LoopEnd":
-                        found_close = True
+                self.bracket_dfa.step('[')
+                self.empty_dfa.step('[')
+            elif node.value == "LoopEnd":
+                self.bracket_dfa.step(']')
 
-                # then we can add an error to our list of issues
-                if not found_close:
-                    self.issues.append(
-                        SemanticIssue("error", "Missing loop close", node)
-                    )
-
-                # if the only node is a loopend it indicates an empty loop
-                if len(node.children) == 1 and node.children[0].value == "LoopEnd":
+                if self.empty_dfa.step(']'):
                     self.issues.append(
                         SemanticIssue(
                             "warning", "[] either do nothing or run forever", node)
                     )
+                    self.empty_dfa.reset()
 
-            elif node.value == "<":
-                # a pointer decrement at the beginning of the program would move the tape to a negative index which is not possible
-                if not self.found_char_other_than_dec:
+            elif node.value != "Program":
+                if self.dec_dfa.step(node.value):
                     self.issues.append(
                         SemanticIssue(
                             "error", "Ptr decrement in the beginning of the program", node)
                     )
-            elif node.value != "Program":
-                self.found_char_other_than_dec = True
+                self.empty_dfa.step(node.value)
 
             # traverse ast recursively
             for child in node.children:
                 traverse(child)
 
         traverse(ast)
+
+        if not self.bracket_dfa.state in self.bracket_dfa.accept_states:
+            self.issues.append(
+                SemanticIssue("error", "Missing loop close", ast)
+            )
 
 
 def test():
